@@ -25,8 +25,12 @@ public class Wrapper implements MethodInterceptor {
             control.planCall(object, method, args, methodProxy);
             return null;
         } else {
-            control.checkCall(object, method, args, methodProxy);
-            return method.invoke(obj, args);
+            TestDoublesControl.Entry entry = control.checkCall(object, method, args, methodProxy);
+            if (entry.overrideResult) {
+                return entry.result;
+            } else {
+                return method.invoke(obj, args);
+            }
         }
     }
 }

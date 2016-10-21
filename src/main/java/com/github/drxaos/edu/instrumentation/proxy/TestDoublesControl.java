@@ -4,7 +4,6 @@ import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.Factory;
 import net.sf.cglib.proxy.MethodProxy;
-import sun.awt.util.IdentityArrayList;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -20,6 +19,8 @@ public class TestDoublesControl {
         Object o;
         String methodName;
         Object[] args;
+        boolean overrideResult;
+        Object result;
 
         public Entry(Object o, String methodName, Object[] args) {
             this.o = o;
@@ -31,6 +32,11 @@ public class TestDoublesControl {
         public String toString() {
             return names.get(o) + "." + methodName + "(" + Arrays.toString(args) + ")";
         }
+
+        public void setOverrideResult(Object overrideResult) {
+            this.overrideResult = true;
+            this.result = overrideResult;
+        }
     }
 
     private boolean planning;
@@ -38,9 +44,6 @@ public class TestDoublesControl {
     private List<String> ignores = new ArrayList<String>();
     private ArrayList<Entry> plan;
     private IdentityHashMap<Object, String> names = new IdentityHashMap<Object, String>();
-    private IdentityArrayList<Object>
-            byEquals = new IdentityArrayList<Object>(),
-            byClass = new IdentityArrayList<Object>();
 
     public TestDoublesControl() {
         ignores.add("toString");
@@ -111,10 +114,20 @@ public class TestDoublesControl {
         plan.add(new Entry(object, method.getName(), args));
     }
 
-    public void checkCall(Object object, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+    public Entry checkCall(Object object, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         Entry expected = plan.remove(0);
         if (expected.o != object) {
-            throw new TestDoublesException("wrong object: " + object );
+            throw new TestDoublesException("wrong object: " + object);
         }
+        if (!expected.methodName.equals(method.getName())) {
+            throw new TestDoublesException("wrong method: " + method.getName());
+        }
+        // TODO check args
+        return expected;
     }
+
+    public void overrideResult(Object result) {
+        plan.get(plan.size() - 1).setOverrideResult(result);
+    }
+
 }
