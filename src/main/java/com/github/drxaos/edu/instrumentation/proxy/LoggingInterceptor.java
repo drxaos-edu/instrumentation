@@ -1,4 +1,4 @@
-package com.github.drxaos.edu.instrumentation;
+package com.github.drxaos.edu.instrumentation.proxy;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -10,20 +10,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.Socket;
-import java.net.URL;
-import java.util.Scanner;
 
-public class SocketProxy {
+public class LoggingInterceptor implements MethodInterceptor {
     public static Socket createSocket() {
         return (Socket) Enhancer.create(Socket.class, new LoggingInterceptor());
     }
 
-    public static void main(String[] args) throws Exception {
-        new Scanner(new URL("http://www.example.com").openStream(), "UTF-8").useDelimiter("\\A").next();
-    }
-}
-
-class LoggingInterceptor implements MethodInterceptor {
     public Object intercept(Object object, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         if (method.getName().equals("getOutputStream")) {
             OutputStream os = (OutputStream) methodProxy.invokeSuper(object, args);

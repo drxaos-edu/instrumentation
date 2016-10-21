@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-PreMain-Class: com.github.drxaos.edu.instrumentation.Agent
+PreMain-Class: com.github.drxaos.edu.instrumentation.SocketProxy
