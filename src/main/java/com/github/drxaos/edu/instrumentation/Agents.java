@@ -14,11 +14,15 @@ public class Agents {
     public static Class agent;
 
     public static void agentmain(String agentArgs, Instrumentation inst) throws Exception {
+        premain(agentArgs, inst);
+    }
+
+    public static void premain(String agentArgs, Instrumentation inst) throws Exception {
         agent.getDeclaredMethod("premain", new Class[]{String.class, Instrumentation.class}).invoke(null, new Object[]{agentArgs, inst});
     }
 
     public static String writeStub(String pid) throws Exception {
-        File file = new File("agent-" + Agents.class.getName() + "-" + pid + ".jar");
+        File file = new File("agent.jar");
         JarOutputStream jar = new JarOutputStream(new FileOutputStream(file));
         jar.putNextEntry(new JarEntry("META-INF/MANIFEST.MF"));
         PrintWriter writer = new PrintWriter(jar);

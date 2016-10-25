@@ -1,0 +1,6 @@
+javap +bytecodeviewer
+generator (asm, jite) -noverify
+logger (javassist)
+agent (javassist)
+proxy (cglib)
+
